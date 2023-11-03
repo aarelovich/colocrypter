@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialog_border"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvRngName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:background="@color/primaryTextColor"
+        android:padding="@dimen/fab_margin"
+        android:text="@string/random_gen_dialog_title"
+        android:textAlignment="center"
+        android:textColor="@color/primaryDarkColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvPassSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/pass_size"
+            android:textAlignment="center"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etPassSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            android:inputType="number"
+            android:textAlignment="center"
+            android:textColor="@color/secondaryLightColor" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/cbUseSymbols"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/use_symbols"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/cbUseNumbers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:checked="true"
+            android:text="@string/use_numbers"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/cbUseLowercase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:checked="true"
+            android:text="@string/use_lowercase_letters"
+            android:textAlignment="viewStart"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/cbUseUppercase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:checked="true"
+            android:text="@string/use_uppercase_letters"
+            android:textAlignment="viewStart"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnRngGenerate"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_background"
+            android:hapticFeedbackEnabled="true"
+            android:text="@string/generate_password" />
+
+        <Button
+            android:id="@+id/btnRngCancel"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_background"
+            android:hapticFeedbackEnabled="true"
+            android:text="@string/cancel_button" />
+    </LinearLayout>
+</LinearLayout>

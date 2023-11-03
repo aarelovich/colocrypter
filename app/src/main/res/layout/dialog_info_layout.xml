@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialog_border"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvShowEntryName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:background="@color/primaryTextColor"
+        android:padding="@dimen/fab_margin"
+        android:textAlignment="center"
+        android:textColor="@color/primaryDarkColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:text="@string/user_name"
+        android:textColor="@color/primaryTextColor"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvShowUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:textColor="@color/secondaryLightColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:text="@string/pass_word"
+        android:textColor="@color/primaryTextColor"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvShowPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:textColor="@color/secondaryLightColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:text="@string/notes_label"
+        android:textColor="@color/primaryTextColor"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvShowNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="10sp"
+        android:padding="8dp"
+        android:textColor="@color/secondaryLightColor"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnDialogEdit"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/button_background"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/edit_data" />
+</android.widget.LinearLayout>
