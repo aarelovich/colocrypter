@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.colocrypter">
+    package="org.ariela.colocrypter">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31"
         >
-        <activity android:name="com.colocrypter.LoginView"
+        <activity android:name="org.ariela.colocrypter.LoginView"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,46 +24,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.colocrypter.ListView"
+            android:name="org.ariela.colocrypter.ListView"
             android:label="@string/title_activity_list_view"
-            android:parentActivityName="com.colocrypter.LoginView"
+            android:parentActivityName="org.ariela.colocrypter.LoginView"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.colocrypter.LoginView" />
+                android:value="org.ariela.colocrypter.LoginView" />
         </activity>
-        <activity android:name="com.colocrypter.ChangePasswordView" />
+        <activity android:name="org.ariela.colocrypter.ChangePasswordView" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts"/>
 
         <activity
-            android:name="com.colocrypter.EditEntryView"
+            android:name="org.ariela.colocrypter.EditEntryView"
             android:label="@string/title_activity_edit_entry_view"
-            android:parentActivityName="com.colocrypter.ListView"
+            android:parentActivityName="org.ariela.colocrypter.ListView"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.colocrypter.ListView" />
+                android:value="org.ariela.colocrypter.ListView" />
         </activity>
         <activity
-            android:name="com.colocrypter.ImportView"
+            android:name="org.ariela.colocrypter.ImportView"
             android:label="@string/title_activity_import_view"
-            android:parentActivityName="com.colocrypter.ListView"
+            android:parentActivityName="org.ariela.colocrypter.ListView"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.colocrypter.ListView" />
+                android:value="org.ariela.colocrypter.ListView" />
         </activity>
         <activity
-            android:name="com.colocrypter.BackupInstructionsView"
+            android:name="org.ariela.colocrypter.BackupInstructionsView"
             android:label="@string/title_activity_backup_instructions"
-            android:parentActivityName="com.colocrypter.ListView"
+            android:parentActivityName="org.ariela.colocrypter.ListView"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.colocrypter.ListView" />
+                android:value="org.ariela.colocrypter.ListView" />
         </activity>
     </application>
 

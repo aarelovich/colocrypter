@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import androidx.core.content.PermissionChecker;
 import android.Manifest;

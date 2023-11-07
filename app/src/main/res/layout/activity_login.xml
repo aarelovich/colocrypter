@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryLightColor"
-    tools:context="com.colocrypter.LoginView">
+    tools:context="org.ariela.colocrypter.LoginView">
 
     <EditText
         android:id="@+id/etDecryptPassword"

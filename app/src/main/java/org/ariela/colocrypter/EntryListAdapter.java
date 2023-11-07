@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;

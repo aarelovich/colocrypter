@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/primaryLightColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.colocrypter.ImportView"
+    tools:context="org.ariela.colocrypter.ImportView"
     tools:showIn="@layout/activity_import_view">
 
     <TextView

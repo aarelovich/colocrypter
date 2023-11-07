@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

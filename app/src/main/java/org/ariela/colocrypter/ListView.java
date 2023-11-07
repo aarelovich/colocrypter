@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;

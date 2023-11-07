@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import android.annotation.TargetApi;
 import android.content.Intent;

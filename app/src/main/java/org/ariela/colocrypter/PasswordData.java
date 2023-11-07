@@ -1,4 +1,4 @@
-package com.colocrypter;
+package org.ariela.colocrypter;
 
 import java.util.ArrayList;
 import java.util.Collections;
