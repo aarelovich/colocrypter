@@ -10,7 +10,7 @@ android {
         applicationId = "org.ariela.colocrypter"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
+        versionCode = 13
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

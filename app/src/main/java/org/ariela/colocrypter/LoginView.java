@@ -41,6 +41,7 @@ public class LoginView extends AppCompatActivity {
 
         // Checking if all files exist. Other wise this is the first time.
         if (!Aux.Init()){
+            Aux.AttemptDirCreate();
             // Call the change password activity.
             Intent intent = new Intent(this,ChangePasswordView.class);
             intent.putExtra(Aux.INTENT_FIRST_TIME,true);

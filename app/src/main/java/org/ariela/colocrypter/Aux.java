@@ -5,11 +5,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import androidx.appcompat.app.AlertDialog;
 
 
 import java.io.File;
+import java.io.FileWriter;
 
 /**
  * Created by ariela on 12/30/17.
@@ -72,7 +74,15 @@ public class Aux {
 
         appData = new PasswordData();
         encryptionPassword = "";
-        FULL_PATH_DATA = Environment.getExternalStorageDirectory().toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //System.err.println("Android version 11 or higher");
+            FULL_PATH_DATA = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
+        }
+        else {
+            //System.err.println("Android version lower than 11");
+            FULL_PATH_DATA = Environment.getExternalStorageDirectory().toString();
+        }
+
         FULL_PATH_WORKDIR = FULL_PATH_DATA + "/" + WORKDIR;
         FULL_PATH_DATA = FULL_PATH_WORKDIR + "/" + DATAFILE;
 
@@ -80,6 +90,55 @@ public class Aux {
         File file = new File(FULL_PATH_DATA);
 
         return (dir.exists() && file.exists());
+    }
+
+    /**
+     * This Function is not part of the application. It was just left here in case I ever need it again.
+     */
+    public static void AttemptDirCreate(){
+        String dirname = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/this_is_a_test";
+        String filename =  dirname + "/test_file.dat";
+        File dir = new File(dirname);
+
+        System.err.println("Attempting to create directory: '" + dirname + "'");
+
+        if (!dir.exists()) {
+            try {
+                dir.mkdirs();
+            }
+            catch (Exception e) {
+                System.err.println("ERROR. Could not make dir. Reason: " + e.getMessage());
+            }
+        }
+
+        if (dir.exists()){
+            System.err.println("Dir Exists or has been created");
+        }
+        else {
+            System.err.println("Was unable to create dir");
+            return;
+        }
+
+        File testfile = new File(filename);
+        if (testfile.exists()){
+            System.err.println("File already exists at " + filename);
+            return;
+        }
+
+        // WE have the directory no we try to crate a file
+        try {
+            FileWriter fwriter = new FileWriter(filename);
+            fwriter.write("This is a sample text");
+            fwriter.close();
+        }
+        catch (Exception e){
+            System.err.println("Exception while writing the file: " + e);
+            return;
+        }
+
+        System.err.println("Successfully created a text file at filename");
+
+
     }
 
     public static String getDataCSVPath(){
