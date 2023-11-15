@@ -1,12 +1,18 @@
 package org.ariela.colocrypter;
 
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
 import androidx.core.content.PermissionChecker;
 import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
+
 import androidx.appcompat.app.AlertDialog;
 
 
@@ -101,6 +107,18 @@ public class Aux {
         File dir = new File(dirname);
 
         System.err.println("Attempting to create directory: '" + dirname + "'");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()){
+                System.err.println("It IS external storage manager");
+            }
+            else {
+                System.err.println("It's NOT external storage manager");
+            }
+        }
+        else {
+            System.err.println("Build version lower than android 11");
+        }
 
         if (!dir.exists()) {
             try {

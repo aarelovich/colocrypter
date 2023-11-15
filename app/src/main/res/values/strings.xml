@@ -13,6 +13,7 @@
     <string name="status_write_not_granted">Write permission was not granted</string>
     <string name="status_rw_not_granted">Read/Write permissions were not granted.</string>
     <string name="status_permission_required">Read/Write permissions are required for ColoCrypter to work.\nTo enable them go to Settings -> General -> Apps -> ColoCrypter -> Permissions\nThen enable Storage</string>
+    <string name="all_access_permissions_required">All Access file permissions required so that writing in the Documents directory is enabled.</string>
     <string name="status_permission_dialog_title">Permissions are required</string>
     <string name="status_pass_not_match">Passwords do not match.</string>
     <string name="status_enc_error_title">Encryption error</string>

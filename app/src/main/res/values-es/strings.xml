@@ -15,6 +15,7 @@
     <string name="status_write_not_granted">Permiso de escritura no fue concedido</string>
     <string name="status_rw_not_granted">Permisos de lectura/escritura no fueron concedidos</string>
     <string name="status_permission_required">Permisos de Lectura\Escritura son necesarios para ColoCrypter funcione.\nPara habilitarlos ir a Ajustes -> General -> Aplicaciones -> ColoCrypter -> Permisos\nLuego habilitar Almacenamiento</string>
+    <string name="all_access_permissions_required">Accesso de manejo de todos los archivos es necesario para que sea posible escribir en el directorio de Documentos.</string>
     <string name="status_permission_dialog_title">Se requieren permisos</string>
     <string name="status_pass_not_match">Las contraseñas no coinciden</string>
     <string name="status_enc_error_message">Este problema no deberia haber ocurrido. Por favor, reinicie la aplicación. Si el problema persiste, contacte al desarrollador y envie el codigo de error.</string>

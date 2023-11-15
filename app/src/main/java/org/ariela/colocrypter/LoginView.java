@@ -1,9 +1,20 @@
 package org.ariela.colocrypter;
 
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,16 +28,35 @@ public class LoginView extends AppCompatActivity {
     private EditText login;
     private Button loginButton;
 
+    private ActivityResultLauncher<Intent> requestFileAccessActivityLauncher =
+            registerForActivityResult(new
+                            ActivityResultContracts.StartActivityForResult(),
+                    (result) -> {
+                        // The if is unnecessary because this code is not called if not true, however I could not compile without it.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (Environment.isExternalStorageManager()){
+                                // All went well.
+                                System.err.println("All went well");
+                                legacyStartUp();
+                            }
+                            else {
+                                // All did not go well.
+                                String title = getResources().getString(R.string.status_permission_dialog_title);
+                                String msg = getResources().getString(R.string.status_permission_required);
+                                Aux.showProblemDialog(this, title, msg);
+                            }
+                        }
+                    }
+            );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
         login = (EditText) findViewById(R.id.etDecryptPassword);
         loginButton = findViewById(R.id.btnLogin);
-
 
         // Adding a listener for the done button
         login.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -39,9 +69,30 @@ public class LoginView extends AppCompatActivity {
             }
         });
 
+        // If this is bigger than Android 11 we need to check for special permission storage.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()){
+                System.err.println("It IS external storage manager");
+                legacyStartUp();
+            }
+            else {
+                System.err.println("It's NOT external storage manager");
+                // Whatever happens here we need to start a new activity to request this permission.
+                Intent storageManagerPermissionIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + this.getPackageName()));
+                requestFileAccessActivityLauncher.launch(storageManagerPermissionIntent);
+            }
+        }
+        else {
+            legacyStartUp();
+        }
+
+
+    }
+
+    protected void legacyStartUp(){
         // Checking if all files exist. Other wise this is the first time.
         if (!Aux.Init()){
-            Aux.AttemptDirCreate();
+            //Aux.AttemptDirCreate();
             // Call the change password activity.
             Intent intent = new Intent(this,ChangePasswordView.class);
             intent.putExtra(Aux.INTENT_FIRST_TIME,true);
@@ -55,10 +106,7 @@ public class LoginView extends AppCompatActivity {
             // Ask for permissions
             askPermissions(rpr);
         }
-
-
     }
-
 
     @Override
     protected void onStart() {
@@ -90,6 +138,7 @@ public class LoginView extends AppCompatActivity {
             Aux.showProblemDialog(this, title, msg);
         }
     }
+
 
     public void onLoginClicked(View view){
         String password = login.getText().toString();
