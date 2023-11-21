@@ -2,13 +2,18 @@ package org.ariela.colocrypter;
 
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.documentfile.provider.DocumentFile;
 
 import android.net.Uri;
 import android.os.Build;
@@ -50,6 +55,27 @@ public class LoginView extends AppCompatActivity {
 //                    }
 //            );
 
+    // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
+    private ActivityResultLauncher<Intent> launchActivityForSelectingFile = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                   Intent data = result.getData();
+                   onFileAccessRequestResult(Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_ONLY,Activity.RESULT_OK,data);
+                }
+            });
+
+    private ActivityResultLauncher<Intent> launchActivityForCreatingFile = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Intent data = result.getData();
+                    onFileAccessRequestResult(Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_NO_FILE,Activity.RESULT_OK,data);
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,24 +96,6 @@ public class LoginView extends AppCompatActivity {
             }
         });
 
-        //Aux.AttemptDirCreate(this);
-        boolean doFileAndDirExist = Aux.Init();
-
-        Aux.TestOpenFile();
-
-        // This is necessary in order to be able to open the file if it was replaced
-        // or recreate it if it was deleted. The file needs to be registered (if it exists o not)
-        // With the media database. If android version is equal to or greater than 11.
-        Aux.PrepareCryptFile(this);
-
-        // Checking if all files exist. Other wise this is the first time.
-        if (!doFileAndDirExist){
-            // Call the change password activity.
-            Intent intent = new Intent(this,ChangePasswordView.class);
-            intent.putExtra(Aux.INTENT_FIRST_TIME,true);
-            startActivity(intent);
-        }
-
         Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
 
         if (rpr.code != Aux.REQUEST_NOTHING){
@@ -95,6 +103,9 @@ public class LoginView extends AppCompatActivity {
             loginButton.setEnabled(false);
             // Ask for permissions
             askPermissions(rpr);
+        }
+        else {
+            AppFileInitialization();
         }
 
     }
@@ -114,40 +125,46 @@ public class LoginView extends AppCompatActivity {
     }
 
     void askPermissions(Aux.ReqPermReturn rpr){
-
-//        Aux.DbugCcrypt("Asking for permissions");
-//        Aux.DbugCcrypt("   CODE: " + Integer.toString(rpr.code));
-//        Aux.DbugCcrypt("   Permissions: ");
-//        for (int i = 0; i < rpr.permissions.length; i++){
-//            Aux.DbugCcrypt("      " + rpr.permissions[i]);
-//        }
-
         requestPermissions(rpr.permissions,rpr.code);
+    }
+
+    void AppFileInitialization(){
+        int ret_code =  Aux.Init(this);
+        if (ret_code == Aux.INIT_FILE_DOES_NOT_EXIST){
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.setType("*/*");
+            intent.putExtra(Intent.EXTRA_TITLE, Aux.DATAFILE);
+            launchActivityForCreatingFile.launch(intent);
+        }
+        else if (ret_code == Aux.INIT_FAILED_TO_CREATE_DIR){
+            String title = getResources().getString(R.string.status_permission_dialog_title);
+            String msg = getResources().getString(R.string.status_permission_required);
+            Aux.showProblemDialog(this, title, msg);
+        }
+        else if (ret_code == Aux.INIT_NEED_PERMISSION){
+            // Request permission but without creating file.
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.setType("*/*");
+            //startActivityForResult(intent, Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_ONLY);
+            launchActivityForSelectingFile.launch(intent);
+            Aux.DbugCcrypt("Would request permissions right here");
+        }
+        else {
+            Aux.DbugCcrypt("App File initialization needs to do nothing");
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-//        Aux.DbugCcrypt("Request Permission Results. Before Super");
-//        Aux.DbugCcrypt("   CODE: " + Integer.toString(requestCode));
-//        Aux.DbugCcrypt("   Permissions: ");
-//        for (int i = 0; i < permissions.length; i++){
-//            Aux.DbugCcrypt("      " + permissions[i] + ". Grant Result: " + Integer.toString(grantResults[i]));
-//        }
-
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-//        Aux.DbugCcrypt("Request Permission Results. After Super");
-//        Aux.DbugCcrypt("   CODE: " + Integer.toString(requestCode));
-//        Aux.DbugCcrypt("   Permissions: ");
-//        for (int i = 0; i < permissions.length; i++){
-//            Aux.DbugCcrypt("      " + permissions[i] + ". Grant Result: " + Integer.toString(grantResults[i]));
-//        }
-
-
         int code = Aux.requestPermissionResult(requestCode, grantResults);
         if (code == Aux.REQPERM_RESULT_OK) {
             loginButton.setEnabled(true);
+            AppFileInitialization();
         }
         else {
             String title = getResources().getString(R.string.status_permission_dialog_title);
@@ -156,11 +173,42 @@ public class LoginView extends AppCompatActivity {
         }
     }
 
+    protected void onFileAccessRequestResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+
+        if (resultCode == RESULT_OK){
+            if ( (requestCode == Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_ONLY) || (requestCode == Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_NO_FILE) ){
+
+                Uri dataFileUri = data.getData();
+
+                Aux.DbugCcrypt("Storing the URI of the Work Directory In Shared Preferences: " + dataFileUri.toString());
+                Aux.storeStringInSharedPreferences(this,Aux.SHARED_PREF_STRING_KEY,dataFileUri.toString());
+
+                // And now we take persistent permission.
+                ContentResolver cr = this.getContentResolver();
+                cr.takePersistableUriPermission(dataFileUri, (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+
+            }
+
+            if (requestCode == Aux.ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_NO_FILE){
+                // We need to start the change password view.
+                Intent intent = new Intent(this,ChangePasswordView.class);
+                intent.putExtra(Aux.INTENT_FIRST_TIME,true);
+                startActivity(intent);
+            }
+
+        }
+        else {
+            // TODO Handle.
+            Aux.DbugCcrypt("On Activity Result was not OK.");
+        }
+
+    }
 
     public void onLoginClicked(View view){
         String password = login.getText().toString();
 
-        AESEngine.AESReturn aer = Aux.decrypt(password);
+        AESEngine.AESReturn aer = Aux.decrypt(password,this);
         if (aer.retCode != AESEngine.AES_OK){
             if (aer.retCode != AESEngine.AES_DECRYPT_ERROR) {
                 String title = getResources().getString(R.string.status_enc_error_title);

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.provider.Settings;
 import android.media.MediaScannerConnection;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.documentfile.provider.DocumentFile;
 
 
 import java.io.BufferedReader;
@@ -69,10 +71,19 @@ public class Aux {
     public static final String CONFIG_START_STRING         = "<>CONFIGS<>";
     public static final String CONFIG_LOGOUT_TIME          = "logOutTime";
 
+    public static final int INIT_RET_CODE_OK                = 0;
+    public static final int INIT_NEED_PERMISSION            = 1;
+    public static final int INIT_FAILED_TO_CREATE_DIR       = 2;
+    public static final int INIT_FILE_DOES_NOT_EXIST        = 4;
+
+    public static final int ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_ONLY    = 100;
+    public static final int ACTIVITY_REQUEST_CODE_SELECT_CCRYPT_NO_FILE = 101;
+
     // AES Engine data
-    private static final String DATAFILE = "data.aux";
-    private static final String LOADFILE = "data.csv";
-    private static final String WORKDIR  = "ccrypt";
+    public static final String DATAFILE = "data.aux";
+    public static final String LOADFILE = "data.csv";
+    public static final String WORKDIR  = "ccrypt";
+    public static final String SHARED_PREF_STRING_KEY = "uri_ccrypt_dir";
     private static String FULL_PATH_DATA;
     private static String FULL_PATH_WORKDIR;
     private static String encryptionPassword;
@@ -81,7 +92,7 @@ public class Aux {
     public static PasswordData appData;
 
     // Intialization function;
-    public static boolean Init(){
+    public static int Init(Context context){
 
         appData = new PasswordData();
         encryptionPassword = "";
@@ -93,9 +104,43 @@ public class Aux {
         Aux.DbugCcrypt("Setting the Full Path to be " + FULL_PATH_WORKDIR);
 
         File dir = new File(FULL_PATH_WORKDIR);
-        File file = new File(FULL_PATH_DATA);
 
-        return (dir.exists() && file.exists());
+        // We need to make sure that the directory exists.
+        if (!dir.exists()){
+            try {
+                dir.mkdir();
+            }
+            catch (Exception e){
+                DbugCcrypt("Failed in creating ccrypt directory. Reason: " + e.getMessage());
+                return INIT_FAILED_TO_CREATE_DIR;
+            }
+        }
+
+
+        // Now we check using the URI.
+        DbugCcrypt("Getting the Shared Preference URI");
+        String dataAuxUriString = getStringInSharedPreferences(context,SHARED_PREF_STRING_KEY);
+        if (!dataAuxUriString.isEmpty()){
+
+            DbugCcrypt("Got the URI File. Testing Read/Write" );
+            Uri dataAuxUri= Uri.parse(dataAuxUriString);
+            DocumentFile dfile = DocumentFile.fromSingleUri(context,dataAuxUri);
+            DbugCcrypt("Data File Exists: " + dfile.exists());
+            DbugCcrypt("Data File Can be read: " + dfile.canRead());
+            DbugCcrypt("Data File Can be written: " + dfile.canWrite());
+
+            if (dfile.exists()){
+                if (dfile.canWrite() && dfile.canRead()) return INIT_RET_CODE_OK;
+                else return INIT_NEED_PERMISSION;
+            }
+            else return INIT_FILE_DOES_NOT_EXIST;
+
+        }
+        else {
+            return INIT_FILE_DOES_NOT_EXIST;
+        }
+
+
     }
 
     public static void GeneratePaths(){
@@ -136,141 +181,11 @@ public class Aux {
         System.err.println("[CCRYPT_DBUG] " + msg);
     }
 
-    public static void TestOpenFile(){
-
-        File file = new File(FULL_PATH_DATA);
-
-        DbugCcrypt("Exists: " + file.exists());
-        DbugCcrypt("Can read: " + file.canRead());
-        DbugCcrypt("Can write: " + file.canWrite());
-
-
-        try {
-            FileReader reader = new FileReader(file);
-            reader.close();
-        }
-        catch (Exception e){
-            DbugCcrypt("TEST got exceeption of: " + e.getMessage());
-            return;
-        }
-
-        DbugCcrypt("TEST: So far so good");
-    }
-
-    /**
-     * This Function is not part of the application. It was just left here in case I ever need it again.
-     */
-    public static void AttemptDirCreate(Context context){
-
-        String documentsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
-        String workDirectory      = "this_is_a_test";
-        String workFile           = "test_file.dat";
-
-        String dirname  = documentsDirectory + "/" + workDirectory;
-        String filename = dirname + "/" + workFile;
-        File dir = new File(dirname);
-
-        DbugCcrypt("Attempting to create directory: '" + dirname + "'");
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()){
-                DbugCcrypt("It IS external storage manager");
-            }
-            else {
-                DbugCcrypt("It's NOT external storage manager");
-            }
-        }
-        else {
-            DbugCcrypt("Build version lower than android 11");
-        }
-
-        if (!dir.exists()) {
-            try {
-                dir.mkdirs();
-            }
-            catch (Exception e) {
-                DbugCcrypt("ERROR. Could not make dir. Reason: " + e.getMessage());
-            }
-        }
-
-        if (dir.exists()){
-            DbugCcrypt("Dir Exists or has been created");
-        }
-        else {
-            DbugCcrypt("Was unable to create dir");
-            return;
-        }
-
-        File testfile = new File(documentsDirectory,workDirectory + "/" + workFile);
-        if (testfile.exists()){
-            DbugCcrypt("File already exists at " + filename);
-            DbugCcrypt("Text file exists. Reading and writing to it");
-
-            String newtext = "";
-            int counter = 0;
-
-            // WE have the directory no we try to crate a file
-            try (BufferedReader br = new BufferedReader(new FileReader(testfile))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    DbugCcrypt("LINE: " + line);
-                    newtext = newtext + "\n" + line;
-                    counter++;
-                }
-            }
-            catch (Exception e) {
-                DbugCcrypt("Exception while reading the file: " + e.getMessage());
-                return;
-            }
-
-            newtext = newtext + "\n" + "This is line " + Integer.toString(counter);
-
-            // WE have the directory no we try to crate a file
-            try {
-                FileWriter fwriter = new FileWriter(filename);
-                fwriter.write(newtext);
-                fwriter.close();
-            }
-            catch (Exception e){
-                DbugCcrypt("Exception while writing the file that already exists: " + e);
-                return;
-            }
-
-            return;
-
-        }
-
-        // WE have the directory no we try to crate a file
-        boolean itWorked = true;
-        try {
-            FileWriter fwriter = new FileWriter(filename);
-            fwriter.write("This is a sample text");
-            fwriter.close();
-        }
-        catch (Exception e){
-            DbugCcrypt("Exception while writing to create the file file: " + e);
-            itWorked = false;
-        }
-
-        if (itWorked){
-            DbugCcrypt("Successfully created a text file at filename");
-        }
-        else {
-            DbugCcrypt("Got the exception to that file exists. Will try media database.");
-            String filePath = testfile.toString();
-            String mimeType = null;
-
-            MediaScannerConnection.scanFile(context, new String[]{filePath}, new String[]{mimeType}, null);
-
-        }
-
-    }
-
     public static String getDataCSVPath(){
         return FULL_PATH_WORKDIR + "/" + LOADFILE;
     }
 
-    public static AESEngine.AESReturn encrypt(String password){
+    public static AESEngine.AESReturn encrypt(String password, Context context){
         if (!password.isEmpty()){
             encryptionPassword = password;
         }
@@ -279,46 +194,61 @@ public class Aux {
         AESEngine.AESReturn aer = aesEngine.getEmptyReturn();
 
         GeneratePaths(); // It should not be necessary to do but somehow sometimes the Full Path Dir is null here. I don't know why.
-        //Aux.DbugCcrypt("Encrypting. Is full path null: "  + (FULL_PATH_WORKDIR == null));
 
         File dir = new File(FULL_PATH_WORKDIR);
+
         if (!dir.exists()) {
-            try {
-                dir.mkdir();
-            } catch (SecurityException se) {
-                aer.retCode = AESEngine.AES_CANNOT_MAKE_DIR;
-                aer.lastError = se.getMessage();
-                aer.data = "";
-            }
+            aer.lastError = "CCrypt Directory Should Exist at this point";
+            aer.retCode = AESEngine.AES_CANNOT_MAKE_DIR;
+            aer.data = "";
+            return aer;
         }
 
+        aer = aesEngine.initEngine(encryptionPassword, context);
         if (aer.retCode != AESEngine.AES_OK){
             return aer;
         }
 
-        aer = aesEngine.initEngine(encryptionPassword);
-        if (aer.retCode != AESEngine.AES_OK){
-            return aer;
+        String dataAuxUriString = getStringInSharedPreferences(context,SHARED_PREF_STRING_KEY);
+        if (!dataAuxUriString.isEmpty()) {
+            Uri dataAuxUri = Uri.parse(dataAuxUriString);
+            aer = aesEngine.encrypt(appData.getRawData(),dataAuxUri);
         }
-
-        aer = aesEngine.encrypt(appData.getRawData(),FULL_PATH_DATA);
+        else {
+            aer.lastError = "Crypt File URI is Empty";
+            aer.retCode = AESEngine.AES_READ_ERROR;
+            aer.data = "";
+        }
         return aer;
+
 
     }
 
-    public static AESEngine.AESReturn decrypt(String password){
+    public static AESEngine.AESReturn decrypt(String password, Context context){
 
         encryptionPassword = password;
 
         AESEngine aesEngine = new AESEngine();
 
-        AESEngine.AESReturn aer = aesEngine.initEngine(encryptionPassword);
+        AESEngine.AESReturn aer = aesEngine.initEngine(encryptionPassword,context);
         if (aer.retCode != AESEngine.AES_OK){
             return aer;
         }
 
-        aer = aesEngine.decrypt(FULL_PATH_DATA);
+        String dataAuxUriString = getStringInSharedPreferences(context,SHARED_PREF_STRING_KEY);
+        if (!dataAuxUriString.isEmpty()) {
+            Uri dataAuxUri = Uri.parse(dataAuxUriString);
+            aer = aesEngine.decrypt(dataAuxUri);
+        }
+        else {
+            aer.lastError = "Crypt File URI is Empty";
+            aer.retCode = AESEngine.AES_READ_ERROR;
+            aer.data = "";
+        }
         return aer;
+
+//        aer = aesEngine.decrypt(FILE_URI);
+//        return aer;
 
     }
 
@@ -379,7 +309,6 @@ public class Aux {
         return rpr;
     }
 
-
     // Function that checks permission results.
     public static int requestPermissionResult(int requestCode, int[] grantResults){
         switch (requestCode) {
@@ -412,7 +341,6 @@ public class Aux {
             default: return REQPERM_RESULT_UNKNOWN;
         }
     }
-
 
     private static boolean wasReadGranted(int[] grantResults){
 
@@ -448,7 +376,6 @@ public class Aux {
         alertDialog.show();
     }
 
-
     public static boolean validateString(String toValidate){
         boolean status = !toValidate.contains(ENTRY_DELIMITER);
         status = status && !toValidate.contains(ENTRY_FIELD_DELIMITER_WRITE);
@@ -461,5 +388,37 @@ public class Aux {
         ret = ret + "...";
         return ret;
     }
+
+    public static Uri searchForCCryptFileOnStoredDirUri(Context context){
+
+        String workDirUriString = getStringInSharedPreferences(context,SHARED_PREF_STRING_KEY);
+        if (workDirUriString.isEmpty()) return null;
+
+        DbugCcrypt("Setting the directory URI: " + workDirUriString);
+        Uri workDirUri = Uri.parse(workDirUriString);
+
+        DocumentFile documentFile = DocumentFile.fromTreeUri(context, workDirUri);
+        for (DocumentFile file : documentFile.listFiles()) {
+            String fname = file.getName();
+            if(file.isDirectory()) continue;
+            if (fname.equals(Aux.DATAFILE)){
+                return file.getUri();
+            }
+        }
+        return null;
+    }
+
+    public static void storeStringInSharedPreferences(Context context, String key, String value){
+        SharedPreferences sharedPref = context.getSharedPreferences("application", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key,value);
+        editor.apply();
+    }
+
+    public static String getStringInSharedPreferences(Context context, String key){
+        SharedPreferences sharedPref = context.getSharedPreferences("application", Context.MODE_PRIVATE);
+        return sharedPref.getString(key, "");
+    }
+
 
 }

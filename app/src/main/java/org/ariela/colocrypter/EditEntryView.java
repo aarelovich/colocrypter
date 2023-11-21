@@ -225,7 +225,7 @@ public class EditEntryView extends BaseClass implements RngPasswordDialog.RngDia
         else{
             Aux.appData.deleteEntry(entryName);
         }
-        AESEngine.AESReturn r = Aux.encrypt("");
+        AESEngine.AESReturn r = Aux.encrypt("",this);
         if (r.retCode != AESEngine.AES_OK) {
             String title = getResources().getString(R.string.status_enc_error_title);
             String msg = getResources().getString(R.string.status_enc_error_message);

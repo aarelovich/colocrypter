@@ -14,6 +14,7 @@
     <string name="status_read_not_granted">Permiso de lectura no fue concedido</string>
     <string name="status_write_not_granted">Permiso de escritura no fue concedido</string>
     <string name="status_rw_not_granted">Permisos de lectura/escritura no fueron concedidos</string>
+    <string name="status_failed_creting_dir">Falla al crear el directory CCrypt</string>
     <string name="status_permission_required">Permisos de Lectura\Escritura son necesarios para ColoCrypter funcione.\nPara habilitarlos ir a Ajustes -> General -> Aplicaciones -> ColoCrypter -> Permisos\nLuego habilitar Almacenamiento</string>
     <string name="all_access_permissions_required">Accesso de manejo de todos los archivos es necesario para que sea posible escribir en el directorio de Documentos.</string>
     <string name="status_permission_dialog_title">Se requieren permisos</string>

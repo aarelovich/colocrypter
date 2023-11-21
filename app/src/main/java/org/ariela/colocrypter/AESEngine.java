@@ -1,5 +1,8 @@
 package org.ariela.colocrypter;
 
+import android.content.Context;
+import android.net.Uri;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -38,6 +41,7 @@ public class AESEngine {
     private final static String ENCODING = "UTF-8";
     private final static String ALGORITHM = "AES/CBC/PKCS5Padding";
     private final static int NCHARS = 16;
+    private Context context;
 
     // Private variables
     private byte[] rawdata;
@@ -60,7 +64,9 @@ public class AESEngine {
         return r;
     }
 
-    public AESReturn initEngine(String passwd){
+    public AESReturn initEngine(String passwd, Context context){
+
+        this.context = context;
 
         AESReturn r = getEmptyReturn();
 
@@ -102,7 +108,7 @@ public class AESEngine {
 
 
     //====================== AES Encryption ======================
-    public AESReturn encrypt(String plaintext,String dataFile){
+    public AESReturn encrypt(String plaintext,Uri dataFile){
 
         AESReturn r = getEmptyReturn();
 
@@ -119,7 +125,7 @@ public class AESEngine {
 
         // Writing the file with encrypted data.
         try{
-            DataOutputStream fos = new DataOutputStream(new FileOutputStream(dataFile));
+            DataOutputStream fos = new DataOutputStream(new FileOutputStream(context.getContentResolver().openFileDescriptor(dataFile, "w").getFileDescriptor()));
 
             // This way the first four bytes represent the length of the written data.
             fos.writeInt((int)rawdata.length);
@@ -136,14 +142,16 @@ public class AESEngine {
     }
 
     //====================== AES Decryption ======================
-    public AESReturn decrypt(String dataFile){
+    //public AESReturn decrypt(String dataFile){
+    public AESReturn decrypt(Uri dataFile){
 
         AESReturn r = getEmptyReturn();
 
         // Opening the file for reading
         byte[] eBytes = null;
         try{
-            DataInputStream fis = new DataInputStream(new FileInputStream(dataFile));
+            //DataInputStream fis = new DataInputStream(new FileInputStream(dataFile));
+            DataInputStream fis = new DataInputStream(new FileInputStream(context.getContentResolver().openFileDescriptor(dataFile, "r").getFileDescriptor()));
 
             // Reading the size of the written files
             int size = fis.readInt();

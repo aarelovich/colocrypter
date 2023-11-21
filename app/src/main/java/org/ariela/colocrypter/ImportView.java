@@ -96,7 +96,7 @@ public class ImportView extends BaseClass {
         }
 
         // Saving the data to file.
-        AESEngine.AESReturn r = Aux.encrypt("");
+        AESEngine.AESReturn r = Aux.encrypt("",this);
         if (r.retCode != AESEngine.AES_OK) {
             String title = getResources().getString(R.string.status_enc_error_title);
             String msg = getResources().getString(R.string.status_enc_error_message);

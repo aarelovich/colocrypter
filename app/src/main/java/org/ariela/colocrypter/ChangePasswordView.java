@@ -83,7 +83,7 @@ public class ChangePasswordView extends BaseClass {
         }
 
         // If it got here, all is ok.
-        AESEngine.AESReturn r = Aux.encrypt(password1);
+        AESEngine.AESReturn r = Aux.encrypt(password1,this);
         if (r.retCode != AESEngine.AES_OK){
             String title = getResources().getString(R.string.status_enc_error_title);
             String msg = getResources().getString(R.string.status_enc_error_message);
