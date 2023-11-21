@@ -155,6 +155,9 @@ public class AESEngine {
 
         }
         catch(Exception e){
+
+            System.err.println("Got the exception when decrypting: " + e.getMessage());
+
             r.retCode = AES_READ_ERROR;
             r.lastError = e.toString();
             return r;

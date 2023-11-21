@@ -28,26 +28,27 @@ public class LoginView extends AppCompatActivity {
     private EditText login;
     private Button loginButton;
 
-    private ActivityResultLauncher<Intent> requestFileAccessActivityLauncher =
-            registerForActivityResult(new
-                            ActivityResultContracts.StartActivityForResult(),
-                    (result) -> {
-                        // The if is unnecessary because this code is not called if not true, however I could not compile without it.
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            if (Environment.isExternalStorageManager()){
-                                // All went well.
-                                System.err.println("All went well");
-                                legacyStartUp();
-                            }
-                            else {
-                                // All did not go well.
-                                String title = getResources().getString(R.string.status_permission_dialog_title);
-                                String msg = getResources().getString(R.string.status_permission_required);
-                                Aux.showProblemDialog(this, title, msg);
-                            }
-                        }
-                    }
-            );
+//  Code used to ask for the permission for All File Access Request.
+//    private ActivityResultLauncher<Intent> requestFileAccessActivityLauncher =
+//            registerForActivityResult(new
+//                            ActivityResultContracts.StartActivityForResult(),
+//                    (result) -> {
+//                        // The if is unnecessary because this code is not called if not true, however I could not compile without it.
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                            if (Environment.isExternalStorageManager()){
+//                                // All went well.
+//                                System.err.println("All went well");
+//                                legacyStartUp();
+//                            }
+//                            else {
+//                                // All did not go well.
+//                                String title = getResources().getString(R.string.status_permission_dialog_title);
+//                                String msg = getResources().getString(R.string.status_permission_required);
+//                                Aux.showProblemDialog(this, title, msg);
+//                            }
+//                        }
+//                    }
+//            );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,30 +70,18 @@ public class LoginView extends AppCompatActivity {
             }
         });
 
-        // If this is bigger than Android 11 we need to check for special permission storage.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()){
-                System.err.println("It IS external storage manager");
-                legacyStartUp();
-            }
-            else {
-                System.err.println("It's NOT external storage manager");
-                // Whatever happens here we need to start a new activity to request this permission.
-                Intent storageManagerPermissionIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + this.getPackageName()));
-                requestFileAccessActivityLauncher.launch(storageManagerPermissionIntent);
-            }
-        }
-        else {
-            legacyStartUp();
-        }
+        //Aux.AttemptDirCreate(this);
+        boolean doFileAndDirExist = Aux.Init();
 
+        Aux.TestOpenFile();
 
-    }
+        // This is necessary in order to be able to open the file if it was replaced
+        // or recreate it if it was deleted. The file needs to be registered (if it exists o not)
+        // With the media database. If android version is equal to or greater than 11.
+        Aux.PrepareCryptFile(this);
 
-    protected void legacyStartUp(){
         // Checking if all files exist. Other wise this is the first time.
-        if (!Aux.Init()){
-            //Aux.AttemptDirCreate();
+        if (!doFileAndDirExist){
             // Call the change password activity.
             Intent intent = new Intent(this,ChangePasswordView.class);
             intent.putExtra(Aux.INTENT_FIRST_TIME,true);
@@ -100,12 +89,14 @@ public class LoginView extends AppCompatActivity {
         }
 
         Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
+
         if (rpr.code != Aux.REQUEST_NOTHING){
             // Permissions are required.
             loginButton.setEnabled(false);
             // Ask for permissions
             askPermissions(rpr);
         }
+
     }
 
     @Override
@@ -123,16 +114,42 @@ public class LoginView extends AppCompatActivity {
     }
 
     void askPermissions(Aux.ReqPermReturn rpr){
+
+//        Aux.DbugCcrypt("Asking for permissions");
+//        Aux.DbugCcrypt("   CODE: " + Integer.toString(rpr.code));
+//        Aux.DbugCcrypt("   Permissions: ");
+//        for (int i = 0; i < rpr.permissions.length; i++){
+//            Aux.DbugCcrypt("      " + rpr.permissions[i]);
+//        }
+
         requestPermissions(rpr.permissions,rpr.code);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+//        Aux.DbugCcrypt("Request Permission Results. Before Super");
+//        Aux.DbugCcrypt("   CODE: " + Integer.toString(requestCode));
+//        Aux.DbugCcrypt("   Permissions: ");
+//        for (int i = 0; i < permissions.length; i++){
+//            Aux.DbugCcrypt("      " + permissions[i] + ". Grant Result: " + Integer.toString(grantResults[i]));
+//        }
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+//        Aux.DbugCcrypt("Request Permission Results. After Super");
+//        Aux.DbugCcrypt("   CODE: " + Integer.toString(requestCode));
+//        Aux.DbugCcrypt("   Permissions: ");
+//        for (int i = 0; i < permissions.length; i++){
+//            Aux.DbugCcrypt("      " + permissions[i] + ". Grant Result: " + Integer.toString(grantResults[i]));
+//        }
+
+
         int code = Aux.requestPermissionResult(requestCode, grantResults);
         if (code == Aux.REQPERM_RESULT_OK) {
             loginButton.setEnabled(true);
-        } else {
+        }
+        else {
             String title = getResources().getString(R.string.status_permission_dialog_title);
             String msg = getResources().getString(R.string.status_permission_required);
             Aux.showProblemDialog(this, title, msg);

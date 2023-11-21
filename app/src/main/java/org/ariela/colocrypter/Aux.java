@@ -5,18 +5,23 @@ import static androidx.core.app.ActivityCompat.startActivityForResult;
 import androidx.core.content.PermissionChecker;
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
+import android.media.MediaScannerConnection;
 
 import androidx.appcompat.app.AlertDialog;
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 
 /**
@@ -80,17 +85,12 @@ public class Aux {
 
         appData = new PasswordData();
         encryptionPassword = "";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            //System.err.println("Android version 11 or higher");
-            FULL_PATH_DATA = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
-        }
-        else {
-            //System.err.println("Android version lower than 11");
-            FULL_PATH_DATA = Environment.getExternalStorageDirectory().toString();
-        }
 
-        FULL_PATH_WORKDIR = FULL_PATH_DATA + "/" + WORKDIR;
-        FULL_PATH_DATA = FULL_PATH_WORKDIR + "/" + DATAFILE;
+        DbugCcrypt("Int Version of Android: " + Integer.toString(Build.VERSION.SDK_INT));
+
+        GeneratePaths();
+
+        Aux.DbugCcrypt("Setting the Full Path to be " + FULL_PATH_WORKDIR);
 
         File dir = new File(FULL_PATH_WORKDIR);
         File file = new File(FULL_PATH_DATA);
@@ -98,26 +98,90 @@ public class Aux {
         return (dir.exists() && file.exists());
     }
 
+    public static void GeneratePaths(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            //DbugCcrypt("Android version 11 or higher");
+            FULL_PATH_DATA = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
+        }
+        else {
+            //DbugCcrypt("Android version lower than 11");
+            FULL_PATH_DATA = Environment.getExternalStorageDirectory().toString();
+        }
+
+        FULL_PATH_WORKDIR = FULL_PATH_DATA + "/" + WORKDIR;
+        FULL_PATH_DATA = FULL_PATH_WORKDIR + "/" + DATAFILE;
+    }
+
+    public static void PrepareCryptFile(Context context){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            File file = new File(FULL_PATH_DATA);
+            String filePath = file.toString();
+            String mimeType = null;
+            MediaScannerConnection.scanFile(context, new String[]{filePath}, new String[]{mimeType}, new MediaScannerConnection.OnScanCompletedListener() {
+                @Override
+                public void onScanCompleted(String path, Uri uri) {
+                    Aux.DbugCcrypt("Scan File Completed. Path: " + path);
+                    if (uri == null){
+                        Aux.DbugCcrypt("File Does not exist");
+                    }
+                    else {
+                        Aux.DbugCcrypt("Scan File Completed. Uri: " + uri.toString());
+                    }
+                }
+            });
+        }
+    }
+
+    public static void DbugCcrypt(String msg){
+        System.err.println("[CCRYPT_DBUG] " + msg);
+    }
+
+    public static void TestOpenFile(){
+
+        File file = new File(FULL_PATH_DATA);
+
+        DbugCcrypt("Exists: " + file.exists());
+        DbugCcrypt("Can read: " + file.canRead());
+        DbugCcrypt("Can write: " + file.canWrite());
+
+
+        try {
+            FileReader reader = new FileReader(file);
+            reader.close();
+        }
+        catch (Exception e){
+            DbugCcrypt("TEST got exceeption of: " + e.getMessage());
+            return;
+        }
+
+        DbugCcrypt("TEST: So far so good");
+    }
+
     /**
      * This Function is not part of the application. It was just left here in case I ever need it again.
      */
-    public static void AttemptDirCreate(){
-        String dirname = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/this_is_a_test";
-        String filename =  dirname + "/test_file.dat";
+    public static void AttemptDirCreate(Context context){
+
+        String documentsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
+        String workDirectory      = "this_is_a_test";
+        String workFile           = "test_file.dat";
+
+        String dirname  = documentsDirectory + "/" + workDirectory;
+        String filename = dirname + "/" + workFile;
         File dir = new File(dirname);
 
-        System.err.println("Attempting to create directory: '" + dirname + "'");
+        DbugCcrypt("Attempting to create directory: '" + dirname + "'");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()){
-                System.err.println("It IS external storage manager");
+                DbugCcrypt("It IS external storage manager");
             }
             else {
-                System.err.println("It's NOT external storage manager");
+                DbugCcrypt("It's NOT external storage manager");
             }
         }
         else {
-            System.err.println("Build version lower than android 11");
+            DbugCcrypt("Build version lower than android 11");
         }
 
         if (!dir.exists()) {
@@ -125,37 +189,80 @@ public class Aux {
                 dir.mkdirs();
             }
             catch (Exception e) {
-                System.err.println("ERROR. Could not make dir. Reason: " + e.getMessage());
+                DbugCcrypt("ERROR. Could not make dir. Reason: " + e.getMessage());
             }
         }
 
         if (dir.exists()){
-            System.err.println("Dir Exists or has been created");
+            DbugCcrypt("Dir Exists or has been created");
         }
         else {
-            System.err.println("Was unable to create dir");
+            DbugCcrypt("Was unable to create dir");
             return;
         }
 
-        File testfile = new File(filename);
+        File testfile = new File(documentsDirectory,workDirectory + "/" + workFile);
         if (testfile.exists()){
-            System.err.println("File already exists at " + filename);
+            DbugCcrypt("File already exists at " + filename);
+            DbugCcrypt("Text file exists. Reading and writing to it");
+
+            String newtext = "";
+            int counter = 0;
+
+            // WE have the directory no we try to crate a file
+            try (BufferedReader br = new BufferedReader(new FileReader(testfile))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    DbugCcrypt("LINE: " + line);
+                    newtext = newtext + "\n" + line;
+                    counter++;
+                }
+            }
+            catch (Exception e) {
+                DbugCcrypt("Exception while reading the file: " + e.getMessage());
+                return;
+            }
+
+            newtext = newtext + "\n" + "This is line " + Integer.toString(counter);
+
+            // WE have the directory no we try to crate a file
+            try {
+                FileWriter fwriter = new FileWriter(filename);
+                fwriter.write(newtext);
+                fwriter.close();
+            }
+            catch (Exception e){
+                DbugCcrypt("Exception while writing the file that already exists: " + e);
+                return;
+            }
+
             return;
+
         }
 
         // WE have the directory no we try to crate a file
+        boolean itWorked = true;
         try {
             FileWriter fwriter = new FileWriter(filename);
             fwriter.write("This is a sample text");
             fwriter.close();
         }
         catch (Exception e){
-            System.err.println("Exception while writing the file: " + e);
-            return;
+            DbugCcrypt("Exception while writing to create the file file: " + e);
+            itWorked = false;
         }
 
-        System.err.println("Successfully created a text file at filename");
+        if (itWorked){
+            DbugCcrypt("Successfully created a text file at filename");
+        }
+        else {
+            DbugCcrypt("Got the exception to that file exists. Will try media database.");
+            String filePath = testfile.toString();
+            String mimeType = null;
 
+            MediaScannerConnection.scanFile(context, new String[]{filePath}, new String[]{mimeType}, null);
+
+        }
 
     }
 
@@ -170,6 +277,9 @@ public class Aux {
 
         AESEngine aesEngine = new AESEngine();
         AESEngine.AESReturn aer = aesEngine.getEmptyReturn();
+
+        GeneratePaths(); // It should not be necessary to do but somehow sometimes the Full Path Dir is null here. I don't know why.
+        //Aux.DbugCcrypt("Encrypting. Is full path null: "  + (FULL_PATH_WORKDIR == null));
 
         File dir = new File(FULL_PATH_WORKDIR);
         if (!dir.exists()) {
@@ -232,17 +342,34 @@ public class Aux {
         String permissions[] = null;
         switch (code) {
             case Aux.REQUEST_CODE_ASK_READ:
-                permissions = new String[1];
-                permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    permissions = new String[3];
+                    permissions[0] = Manifest.permission.READ_MEDIA_IMAGES;
+                    permissions[1] = Manifest.permission.READ_MEDIA_AUDIO;
+                    permissions[2] = Manifest.permission.READ_MEDIA_VIDEO;
+                }
+                else {
+                    permissions = new String[1];
+                    permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+                }
                 break;
             case Aux.REQUEST_CODE_ASK_WRITE:
                 permissions = new String[1];
                 permissions[0] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
                 break;
             case Aux.REQUEST_CODE_ASK_READ_WRITE:
-                permissions = new String[2];
-                permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
-                permissions[1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    permissions = new String[4];
+                    permissions[0] = Manifest.permission.READ_MEDIA_IMAGES;
+                    permissions[1] = Manifest.permission.READ_MEDIA_AUDIO;
+                    permissions[2] = Manifest.permission.READ_MEDIA_VIDEO;
+                    permissions[3] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                }
+                else {
+                    permissions = new String[2];
+                    permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+                    permissions[1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                }
                 break;
         }
 
@@ -257,31 +384,55 @@ public class Aux {
     public static int requestPermissionResult(int requestCode, int[] grantResults){
         switch (requestCode) {
             case Aux.REQUEST_CODE_ASK_READ:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (wasReadGranted(grantResults)) {
                     // Permission Granted
                     return REQPERM_RESULT_OK;
-                } else {
+                }
+                else {
                     // Permission Denied
                     return REQPERM_RESULT_READ;
                 }
             case Aux.REQUEST_CODE_ASK_WRITE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (wasWriteGranted(grantResults)) {
                     // Permission Granted
                     return REQPERM_RESULT_OK;
-                } else {
+                }
+                else {
                     // Permission Denied
                     return REQPERM_RESULT_READ;
                 }
             case Aux.REQUEST_CODE_ASK_READ_WRITE:
                 int code = REQPERM_RESULT_OK;
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) code = REQPERM_RESULT_READ;
-                if (grantResults[1] != PackageManager.PERMISSION_GRANTED) {
+                if (!wasReadGranted(grantResults)) code = REQPERM_RESULT_READ;
+                if (wasWriteGranted(grantResults)) {
                     if (code != REQPERM_RESULT_OK) code = REQPERM_RESULT_WRITE;
                     else code = REQPERM_RESULT_RW;
                 }
                 return code;
             default: return REQPERM_RESULT_UNKNOWN;
         }
+    }
+
+
+    private static boolean wasReadGranted(int[] grantResults){
+
+        if (grantResults.length < 1) return false;
+
+        boolean wasReadGranted = true;
+
+        int nmax = 1;
+        if (grantResults.length > 1) nmax = grantResults.length - 1; // If there is only one, that the read permission. Otherwise it is all bu the last one.
+
+        for (int i = 0; i < nmax; i++){
+            wasReadGranted = wasReadGranted && (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+        }
+        return wasReadGranted;
+    }
+
+    private static boolean wasWriteGranted(int[] grantResults){
+        if (grantResults.length < 1) return false;
+        int writeIndexPermission = grantResults.length-1;
+        return (grantResults[writeIndexPermission] == PackageManager.PERMISSION_GRANTED);
     }
 
     public static void showProblemDialog(Activity activity, String title, String message){

@@ -22,8 +22,13 @@ public class BaseClass extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int t = Aux.appData.getConfigurationInteger(Aux.CONFIG_LOGOUT_TIME);
-        if (t == -1) t = Aux.DEFAULT_TIME_OUT;
+        int t = 300000;
+        if (Aux.appData !=  null){
+            System.err.println("Attempting to invokoe get configuration integer");
+            System.err.println("Time is " + Aux.CONFIG_LOGOUT_TIME);
+            t = Aux.appData.getConfigurationInteger(Aux.CONFIG_LOGOUT_TIME);
+            if (t == -1) t = Aux.DEFAULT_TIME_OUT;
+        }
         setLogOutTime(t);
     }
 

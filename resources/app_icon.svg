@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 48 48"
+   id="vector"
+   version="1.1"
+   sodipodi:docname="app_icon.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs58" />
+  <sodipodi:namedview
+     id="namedview56"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="17.395833"
+     inkscape:cx="14.62994"
+     inkscape:cy="24"
+     inkscape:window-width="2560"
+     inkscape:window-height="1376"
+     inkscape:window-x="1920"
+     inkscape:window-y="36"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="vector" />
+  <path
+     id="path"
+     d="M 13.5 19.13 L 33.38 19.13 L 33.38 36.57 L 13.5 36.57 Z"
+     fill="#00000000"
+     stroke="#ffffff"
+     stroke-width="1" />
+  <path
+     id="path_1"
+     d="M 23.25 27.56 M 20.62 27.56 C 20.584 26.984 20.74 26.411 21.062 25.932 C 21.383 25.452 21.855 25.092 22.401 24.907 C 22.948 24.722 23.542 24.722 24.089 24.907 C 24.635 25.092 25.107 25.452 25.428 25.932 C 25.75 26.411 25.906 26.984 25.87 27.56 C 25.906 28.136 25.75 28.709 25.428 29.188 C 25.107 29.668 24.635 30.028 24.089 30.213 C 23.542 30.398 22.948 30.398 22.401 30.213 C 21.855 30.028 21.383 29.668 21.062 29.188 C 20.74 28.709 20.584 28.136 20.62 27.56"
+     fill="#ffffff"
+     stroke="#ffffff"
+     stroke-width="1" />
+  <path
+     style="fill:#000051;fill-rule:evenodd;stroke-width:2.41606;fill-opacity:1"
+     id="path287"
+     sodipodi:type="arc"
+     sodipodi:cx="24"
+     sodipodi:cy="23.913771"
+     sodipodi:rx="23.482634"
+     sodipodi:ry="23.396408"
+     sodipodi:start="1.6718495"
+     sodipodi:end="1.6623932"
+     sodipodi:arc-type="arc"
+     d="M 21.631042,47.190821 A 23.482634,23.396408 0 0 1 0.63162863,21.608546 23.482634,23.396408 0 0 1 26.258469,0.6258206 23.482634,23.396408 0 0 1 47.37905,26.108886 23.482634,23.396408 0 0 1 21.852071,47.2121"
+     sodipodi:open="true" />
+  <path
+     id="path_2"
+     d="M 11.41 0.49 L 36.59 0.49 C 39.485 0.49 42.264 1.641 44.312 3.688 C 46.359 5.736 47.51 8.515 47.51 11.41 L 47.51 36.59 C 47.51 39.485 46.359 42.264 44.312 44.312 C 42.264 46.359 39.485 47.51 36.59 47.51 L 11.41 47.51 C 8.515 47.51 5.736 46.359 3.688 44.312 C 1.641 42.264 0.49 39.485 0.49 36.59 L 0.49 11.41 C 0.49 8.515 1.641 5.736 3.688 3.688 C 5.736 1.641 8.515 0.49 11.41 0.49 Z"
+     fill="#000051"
+     stroke="#00000000"
+     stroke-width="0.97959185" />
+  <path
+     id="path_3"
+     d="M 14.08 19.75 L 33.92 19.75 C 34.653 19.753 35.355 20.052 35.872 20.582 C 36.389 21.113 36.68 21.831 36.68 22.58 L 36.68 36.75 C 36.683 37.5 36.393 38.222 35.876 38.754 C 35.358 39.286 34.654 39.587 33.92 39.59 L 14.08 39.59 C 13.346 39.587 12.642 39.286 12.124 38.754 C 11.607 38.222 11.317 37.5 11.32 36.75 L 11.32 22.58 C 11.32 21.831 11.611 21.113 12.128 20.582 C 12.645 20.052 13.347 19.753 14.08 19.75 Z"
+     fill="#000051"
+     stroke="#ffffff"
+     stroke-width="1.10111535"
+     stroke-linecap="square" />
+  <path
+     id="path_4"
+     d="M 26.37 31.99 C 26.37 32.661 26.123 33.305 25.684 33.782 C 25.244 34.259 24.646 34.532 24.02 34.54 C 23.393 34.549 22.788 34.292 22.337 33.826 C 21.886 33.36 21.625 32.721 21.61 32.05 C 21.595 31.378 21.828 30.727 22.259 30.238 C 22.689 29.749 23.283 29.462 23.91 29.44 C 24.534 29.417 25.143 29.658 25.603 30.11 C 26.063 30.563 26.339 31.192 26.37 31.86 L 23.99 31.98 Z"
+     fill="#ffffff"
+     stroke="#ffffff"
+     stroke-width="1.00157475"
+     stroke-linecap="square" />
+  <path
+     id="path_5"
+     d="M 12.09 28.85 L 19.55 28.85"
+     fill="#ffffff"
+     stroke="#ffffff"
+     stroke-width="1.00157475"
+     stroke-linecap="round" />
+  <path
+     id="path_6"
+     d="M 12.02 24.36 L 22.72 24.36"
+     fill="#ffffff"
+     stroke="#ffffff"
+     stroke-width="1.00157475"
+     stroke-linecap="round" />
+  <path
+     id="path_7"
+     d="M 16.7 19.16 C 16.502 17.414 16.711 15.633 17.3 14.033 C 17.889 12.433 18.834 11.08 20.02 10.14 C 21.208 9.199 22.587 8.711 23.99 8.734 C 25.394 8.757 26.762 9.291 27.93 10.27 C 29.099 11.248 30.017 12.631 30.574 14.251 C 31.132 15.871 31.304 17.66 31.07 19.4"
+     fill="#00000000"
+     stroke="#ffffff"
+     stroke-width="1.71238196"
+     stroke-linecap="round"
+     style="fill:#000051;fill-opacity:1" />
+</svg>
