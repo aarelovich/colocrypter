@@ -4,9 +4,13 @@
  * and open the template in the editor.
  */
 package org.ariela.colocrypter;
+import android.content.Context;
+import android.net.Uri;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,23 +37,32 @@ public class CSVReader {
     
     // The status of the operation
     private int status;
+    private String last_error;
     
     public CSVReader(){
         status = CSV_OK;
+        last_error = "";
     }
     
     public int getStatus(){
         return status;
     }
-    
+
+    public String getLastError(){
+        return this.last_error;
+    }
+
     // Loading the actual data.
-    public List< List<String> > loadCSV(String inputFilePath){
+    public List< List<String> > loadCSV(Uri inputFileUri, Context context){
         
        List < List<String> > results = new ArrayList<>();
 
+
+
        try{
-          File inputF = new File(inputFilePath);
-          InputStream inputFS = new FileInputStream(inputF);
+          //File inputF = new File(inputFilePath);
+          //InputStream inputFS = new FileInputStream(inputF);
+          InputStream inputFS = new FileInputStream(context.getContentResolver().openFileDescriptor(inputFileUri, "r").getFileDescriptor());
           BufferedReader br = new BufferedReader(new InputStreamReader(inputFS));
           
           while (true){
@@ -68,7 +81,8 @@ public class CSVReader {
           
         } 
         catch (IOException e) {
-            status = CSV_COULD_NOT_READ_FILE;
+           last_error = e.getMessage();
+           status = CSV_COULD_NOT_READ_FILE;
         }        
         
         if (status != CSV_OK) return results;

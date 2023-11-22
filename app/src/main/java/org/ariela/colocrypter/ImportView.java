@@ -1,17 +1,35 @@
 package org.ariela.colocrypter;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.Toolbar;
+import androidx.documentfile.provider.DocumentFile;
 
 import java.util.List;
 
 public class ImportView extends BaseClass {
 
     private Button btnImport;
+
+    private ActivityResultLauncher<Intent> launchActivityForSelectingCSV = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Intent data = result.getData();
+                    processCSV(result.getResultCode(),data);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,42 +40,63 @@ public class ImportView extends BaseClass {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         btnImport = findViewById(R.id.btnImport);
 
-        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
-        if (rpr.code != Aux.REQUEST_NOTHING){
-            // Permissions are required.
-            btnImport.setEnabled(false);
-            // Ask for permissions
-            askPermissions(rpr);
-        }
+//        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
+//        if (rpr.code != Aux.REQUEST_NOTHING){
+//            // Permissions are required.
+//            btnImport.setEnabled(false);
+//            // Ask for permissions
+//            askPermissions(rpr);
+//        }
 
     }
 
-    @TargetApi(23)
-    void askPermissions(Aux.ReqPermReturn rpr){
-        requestPermissions(rpr.permissions,rpr.code);
-    }
+//    @TargetApi(23)
+//    void askPermissions(Aux.ReqPermReturn rpr){
+//        requestPermissions(rpr.permissions,rpr.code);
+//    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int code = Aux.requestPermissionResult(requestCode, grantResults);
-        if (code == Aux.REQPERM_RESULT_OK) {
-            btnImport.setEnabled(true);
-        } else {
-            String title = getResources().getString(R.string.status_permission_dialog_title);
-            String msg = getResources().getString(R.string.status_permission_required);
-            Aux.showProblemDialog(this, title, msg);
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        int code = Aux.requestPermissionResult(requestCode, grantResults);
+//        if (code == Aux.REQPERM_RESULT_OK) {
+//            btnImport.setEnabled(true);
+//        } else {
+//            String title = getResources().getString(R.string.status_permission_dialog_title);
+//            String msg = getResources().getString(R.string.status_permission_required);
+//            Aux.showProblemDialog(this, title, msg);
+//        }
+//    }
 
     public void importCSV(View view){
+        // We need to select the CSV
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        launchActivityForSelectingCSV.launch(intent);
+    }
+
+    public void processCSV(int resultCode, Intent data){
+
+        if (resultCode != RESULT_OK){
+            Aux.showProblemDialog(this,"ACTIVITY RES ERROR","The activity result code was not ok, but: " + Integer.toString(resultCode));
+            return;
+        }
+
+        Uri fileURI = data.getData();
+
+        Aux.DbugCcrypt("Got the FILE URI: " + fileURI.getPath());
+        DocumentFile dfile = DocumentFile.fromSingleUri(this,fileURI);
+        Aux.DbugCcrypt("File exists: " + dfile.exists());
+        Aux.DbugCcrypt("File can read: " + dfile.canRead());
+        Aux.DbugCcrypt("File can write: " + dfile.canWrite());
 
         CSVReader reader = new CSVReader();
-        List<List<String>> readData = reader.loadCSV(Aux.getDataCSVPath());
+        List<List<String>> readData = reader.loadCSV(fileURI,this);
 
         if (reader.getStatus() == CSVReader.CSV_COULD_NOT_READ_FILE){
             String title = getResources().getString(R.string.app_name);
-            String message = getResources().getString(R.string.import_error_file);
+            String message = getResources().getString(R.string.import_error_file) + reader.getLastError();
             Aux.showProblemDialog(this,title,message);
             return;
         }
@@ -110,7 +149,7 @@ public class ImportView extends BaseClass {
         intent.putExtra(Aux.INTENT_FROM_IMPORT_MESSAGE,msg);
         startActivity(intent);
 
-    }
 
+    }
 
 }

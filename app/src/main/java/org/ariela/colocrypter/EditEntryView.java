@@ -58,14 +58,14 @@ public class EditEntryView extends BaseClass implements RngPasswordDialog.RngDia
             btnAdd.setText(getResources().getString(R.string.entry_add));
         }
 
-        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
+        //Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
         permissionsOk = true;
-        if (rpr.code != Aux.REQUEST_NOTHING){
-            // Permissions are required.
-            btnAdd.setEnabled(false);
-            // Ask for permissions
-            askPermissions(rpr);
-        }
+//        if (rpr.code != Aux.REQUEST_NOTHING){
+//            // Permissions are required.
+//            btnAdd.setEnabled(false);
+//            // Ask for permissions
+//            askPermissions(rpr);
+//        }
 
     }
 
@@ -82,24 +82,24 @@ public class EditEntryView extends BaseClass implements RngPasswordDialog.RngDia
         return true;
     }
 
-    @TargetApi(23)
-    void askPermissions(Aux.ReqPermReturn rpr){
-        requestPermissions(rpr.permissions,rpr.code);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int code = Aux.requestPermissionResult(requestCode, grantResults);
-        if (code == Aux.REQPERM_RESULT_OK) {
-            btnAdd.setEnabled(true);
-        } else {
-            permissionsOk = false;
-            String title = getResources().getString(R.string.status_permission_dialog_title);
-            String msg = getResources().getString(R.string.status_permission_required);
-            Aux.showProblemDialog(this, title, msg);
-        }
-    }
+//    @TargetApi(23)
+//    void askPermissions(Aux.ReqPermReturn rpr){
+//        requestPermissions(rpr.permissions,rpr.code);
+//    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        int code = Aux.requestPermissionResult(requestCode, grantResults);
+//        if (code == Aux.REQPERM_RESULT_OK) {
+//            btnAdd.setEnabled(true);
+//        } else {
+//            permissionsOk = false;
+//            String title = getResources().getString(R.string.status_permission_dialog_title);
+//            String msg = getResources().getString(R.string.status_permission_required);
+//            Aux.showProblemDialog(this, title, msg);
+//        }
+//    }
 
     ////////////////////// DIALOG CLICK LISTENER FOR CONFIRMATION DIALOGS ///////////////////////////
     DialogInterface.OnClickListener modifyDialogClickLister = new DialogInterface.OnClickListener() {

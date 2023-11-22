@@ -21,46 +21,54 @@ public class ChangePasswordView extends BaseClass {
 
         btnSetLoginPass = (Button) findViewById(R.id.btnSetLoginPass);
 
-        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
-        if (rpr.code != Aux.REQUEST_NOTHING){
-            // Permissions are required.
-            btnSetLoginPass.setEnabled(false);
-            // Ask for permissions
-            askPermissions(rpr);
+//        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
+//        if (rpr.code != Aux.REQUEST_NOTHING){
+//            // Permissions are required.
+//            btnSetLoginPass.setEnabled(false);
+//            // Ask for permissions
+//            askPermissions(rpr);
+//        }
+//        else{
+//            Intent intent = getIntent();
+//            if (intent.getBooleanExtra(Aux.INTENT_FIRST_TIME,false)) {
+//                Aux.showProblemDialog(this,
+//                        getResources().getString(R.string.welcome_message_title),
+//                        getResources().getString(R.string.welcome_message));
+//            }
+//        }
+
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(Aux.INTENT_FIRST_TIME,false)) {
+            Aux.showProblemDialog(this,
+                    getResources().getString(R.string.welcome_message_title),
+                    getResources().getString(R.string.welcome_message));
         }
-        else{
-            Intent intent = getIntent();
-            if (intent.getBooleanExtra(Aux.INTENT_FIRST_TIME,false)) {
-                Aux.showProblemDialog(this,
-                        getResources().getString(R.string.welcome_message_title),
-                        getResources().getString(R.string.welcome_message));
-            }
-        }
+
     }
 
-    @TargetApi(23)
-    void askPermissions(Aux.ReqPermReturn rpr){
-        requestPermissions(rpr.permissions,rpr.code);
-    }
+//    @TargetApi(23)
+//    void askPermissions(Aux.ReqPermReturn rpr){
+//        requestPermissions(rpr.permissions,rpr.code);
+//    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        int code = Aux.requestPermissionResult(requestCode, grantResults);
-        if (code == Aux.REQPERM_RESULT_OK) {
-            btnSetLoginPass.setEnabled(true);
-            Intent intent = getIntent();
-            if (intent.getBooleanExtra(Aux.INTENT_FIRST_TIME, false)) {
-                Aux.showProblemDialog(this,
-                        getResources().getString(R.string.welcome_message_title),
-                        getResources().getString(R.string.welcome_message));
-            }
-        } else {
-            String title = getResources().getString(R.string.status_permission_dialog_title);
-            String msg = getResources().getString(R.string.status_permission_required);
-            Aux.showProblemDialog(this, title, msg);
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        int code = Aux.requestPermissionResult(requestCode, grantResults);
+//        if (code == Aux.REQPERM_RESULT_OK) {
+//            btnSetLoginPass.setEnabled(true);
+//            Intent intent = getIntent();
+//            if (intent.getBooleanExtra(Aux.INTENT_FIRST_TIME, false)) {
+//                Aux.showProblemDialog(this,
+//                        getResources().getString(R.string.welcome_message_title),
+//                        getResources().getString(R.string.welcome_message));
+//            }
+//        } else {
+//            String title = getResources().getString(R.string.status_permission_dialog_title);
+//            String msg = getResources().getString(R.string.status_permission_required);
+//            Aux.showProblemDialog(this, title, msg);
+//        }
+//    }
 
     // Called in the onClick listener for the set password button.
     public void changePassword(View view){
