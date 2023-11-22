@@ -1,10 +1,6 @@
 package org.ariela.colocrypter;
 
-import static androidx.core.app.ActivityCompat.startActivityForResult;
-
-import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,13 +12,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.documentfile.provider.DocumentFile;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -87,18 +79,6 @@ public class LoginView extends AppCompatActivity {
             }
         });
 
-//        Aux.ReqPermReturn rpr = Aux.getRequiredPermissions(this);
-//
-//        if (rpr.code != Aux.REQUEST_NOTHING){
-//            // Permissions are required.
-//            loginButton.setEnabled(false);
-//            // Ask for permissions
-//            askPermissions(rpr);
-//        }
-//        else {
-//            AppFileInitialization();
-//        }
-
         AppFileInitialization();
 
     }
@@ -116,10 +96,6 @@ public class LoginView extends AppCompatActivity {
         // login.setText("poli2416");
 
     }
-
-//    void askPermissions(Aux.ReqPermReturn rpr){
-//        requestPermissions(rpr.permissions,rpr.code);
-//    }
 
     void AppFileInitialization(){
         int ret_code =  Aux.Init(this);
@@ -169,21 +145,6 @@ public class LoginView extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_TITLE, Aux.DATAFILE);
         launchActivityForCreatingFile.launch(intent);
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        int code = Aux.requestPermissionResult(requestCode, grantResults);
-//        if (code == Aux.REQPERM_RESULT_OK) {
-//            loginButton.setEnabled(true);
-//            AppFileInitialization();
-//        }
-//        else {
-//            String title = getResources().getString(R.string.status_permission_dialog_title);
-//            String msg = getResources().getString(R.string.status_permission_required);
-//            Aux.showProblemDialog(this, title, msg);
-//        }
-//    }
 
     protected void onFileAccessRequestResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode,resultCode,data);
@@ -248,7 +209,6 @@ public class LoginView extends AppCompatActivity {
 
     // Back button on login should show home.
     public void backButtonPressed() {
-        //super.onBackPressed();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
